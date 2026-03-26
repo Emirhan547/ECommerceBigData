@@ -182,12 +182,11 @@
 
             <!-- Metrics Cards - Dinamik -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <!-- Total Revenue -->
-                <!-- Total Revenue Kartı - Growth rate dinamik -->
+                <!-- Total Revenue Kartı -->
                 <div class="mt-6 flex items-center gap-2">
                     <span class="flex items-center text-secondary text-[10px] font-bold bg-secondary/10 px-2 py-0.5 rounded-full">
                         <span class="material-symbols-outlined text-[12px] mr-1">trending_up</span>
-                        @(Model.MonthlyTrend?.RevenueGrowthRate.ToString("F1") ?? "0")%
+                        @(Model.RevenueGrowthRate.ToString("F1"))%
                     </span>
                     <span class="text-zinc-500 text-[10px]">vs last month</span>
                 </div>
@@ -196,9 +195,18 @@
                 <div class="mt-6 flex items-center gap-2">
                     <span class="flex items-center text-secondary text-[10px] font-bold bg-secondary/10 px-2 py-0.5 rounded-full">
                         <span class="material-symbols-outlined text-[12px] mr-1">trending_up</span>
-                        @(Model.MonthlyTrend?.OrdersGrowthRate.ToString("F1") ?? "0")%
+                        @(Model.OrdersGrowthRate.ToString("F1"))%
                     </span>
                     <span class="text-zinc-500 text-[10px]">vs last month</span>
+                </div>
+
+                <!-- Total Customers Kartı -->
+                <div class="mt-6 flex items-center gap-2">
+                    <span class="flex items-center text-secondary text-[10px] font-bold bg-secondary/10 px-2 py-0.5 rounded-full">
+                        <span class="material-symbols-outlined text-[12px] mr-1">trending_up</span>
+                        @(Model.CustomersGrowthRate.ToString("F1"))%
+                    </span>
+                    <span class="text-zinc-500 text-[10px]">active this week</span>
                 </div>
 
                 <!-- Total Customers -->

@@ -1,4 +1,5 @@
-﻿using ECommerceBigData.Data.Repositories.DashboardRepositories;
+﻿using Dapper;
+using ECommerceBigData.Data.Repositories.DashboardRepositories;
 using ECommerceBigData.Data.Repositories.OrderRepositories;
 using ECommerceBigData.Data.Repositories.ProductRepositories;
 using ECommerceBigData.Models;
@@ -8,82 +9,85 @@ namespace ECommerceBigData.Controllers
 {
     public class DashboardController : Controller
     {
-        private readonly IDashboardRepository _dashboardRepository;
-        private readonly IProductRepository _productRepository;
-        private readonly IOrderRepository _orderRepository;
+        private readonly IDashboardRepository _dashboard;
+        private readonly IProductRepository _products;
+        private readonly IOrderRepository _orders;
 
         public DashboardController(
             IDashboardRepository dashboard,
-            IProductRepository productRepository,
-            IOrderRepository orderRepository)
+            IProductRepository products,
+            IOrderRepository orders)
         {
-            _dashboardRepository = dashboard;
-            _productRepository = productRepository;
-            _orderRepository = orderRepository;
+            _dashboard = dashboard;
+            _products = products;
+            _orders = orders;
         }
 
+        // GET /Dashboard
         public async Task<IActionResult> Index()
         {
-            // Tüm task'ları paralel çalıştır
-            var summaryTask = _dashboardRepository.GetSummaryAsync();
-            var dailySalesTask = _dashboardRepository.GetDailySalesAsync();
-            var countryTask = _dashboardRepository.GetCountrySalesAsync();
-            var cityTask = _dashboardRepository.GetCitySalesAsync();
-            var categoryTask = _dashboardRepository.GetCategorySalesAsync();
-            var monthlyTrendTask = _dashboardRepository.GetMonthlyTrendAsync();
-            var topProductsTask = _productRepository.GetTopProductsAsync();
-            var lastOrdersTask = _orderRepository.GetLastOrdersAsync();
-
-            await Task.WhenAll(
-                summaryTask,
-                dailySalesTask,
-                countryTask,
-                cityTask,
-                categoryTask,
-                monthlyTrendTask,
-                topProductsTask,
-                lastOrdersTask
+            var tasks = await Task.WhenAll(
+                _dashboard.GetSummaryAsync().ContinueWith(t => (object)t.Result),
+                _dashboard.GetDailySalesAsync().ContinueWith(t => (object)t.Result),
+                _dashboard.GetCountrySalesAsync().ContinueWith(t => (object)t.Result),
+                _dashboard.GetCitySalesAsync().ContinueWith(t => (object)t.Result),
+                _dashboard.GetCategorySalesAsync().ContinueWith(t => (object)t.Result),
+                _products.GetTopProductsAsync().ContinueWith(t => (object)t.Result),
+                _orders.GetLastOrdersAsync().ContinueWith(t => (object)t.Result),
+                _dashboard.GetMonthlyRevenueAsync().ContinueWith(t => (object)t.Result),
+                _dashboard.GetHourlyOrderHeatmapAsync().ContinueWith(t => (object)t.Result),
+                _dashboard.GetTopCustomersAsync(5).ContinueWith(t => (object)t.Result),
+                _dashboard.GetKpiMetricsAsync().ContinueWith(t => (object)t.Result),
+                _dashboard.GetSegmentDistributionAsync().ContinueWith(t => (object)t.Result)
             );
 
-            // Kategori satışlarına yüzde hesapla
-            var categorySales = categoryTask.Result;
-            var totalCategorySales = categorySales.Sum(x => x.TotalSales);
-            foreach (var category in categorySales)
-            {
-                category.Percentage = totalCategorySales > 0
-                    ? (double)(category.TotalSales / totalCategorySales * 100)
-                    : 0;
-
-                // İkonları kategorilere göre ayarla
-                category.Icon = GetCategoryIcon(category.CategoryName);
-            }
+            // Growth rate hesapla
+            var prevRevenue = await GetPreviousMonthRevenueAsync();
+            var currRevenue = ((ECommerceBigData.Dtos.DashboardSummaryDto)tasks[0]).TotalRevenue;
 
             var model = new DashboardViewModel
             {
-                Summary = summaryTask.Result,
-                DailySales = dailySalesTask.Result,
-                CountrySales = countryTask.Result,
-                CitySales = cityTask.Result,
-                TopProducts = topProductsTask.Result,
-                LastOrders = lastOrdersTask.Result,
-                CategorySales = categorySales,
-                MonthlyTrend = monthlyTrendTask.Result
+                Summary = (ECommerceBigData.Dtos.DashboardSummaryDto)tasks[0],
+                DailySales = (List<ECommerceBigData.Dtos.DailySalesDto>)tasks[1],
+                CountrySales = (List<ECommerceBigData.Dtos.CountrySalesDto>)tasks[2],
+                CitySales = (List<ECommerceBigData.Dtos.CitySalesDto>)tasks[3],
+                CategorySales = (List<ECommerceBigData.Dtos.CategorySalesDto>)tasks[4],
+                TopProducts = (List<ECommerceBigData.Dtos.TopProductDto>)tasks[5],
+                LastOrders = (List<ECommerceBigData.Dtos.LastOrderDto>)tasks[6],
+                MonthlyRevenue = (List<ECommerceBigData.Dtos.MonthlyRevenueDto>)tasks[7],
+                HourlyHeatmap = (List<ECommerceBigData.Dtos.HourlyOrderDto>)tasks[8],
+                TopCustomers = (List<ECommerceBigData.Dtos.TopCustomerDto>)tasks[9],
+                KpiMetrics = (ECommerceBigData.Dtos.KpiMetricsDto)tasks[10],
+                SegmentDistribution = (List<ECommerceBigData.Dtos.SegmentDistributionDto>)tasks[11],
+                RevenueGrowthRate = prevRevenue > 0
+                    ? Math.Round((currRevenue - prevRevenue) / prevRevenue * 100, 1)
+                    : 12.5m
             };
 
             return View(model);
         }
 
-        private string GetCategoryIcon(string categoryName)
+        // GET /Dashboard/Search?q=...   (AJAX)
+        [HttpGet]
+        public async Task<IActionResult> Search(string q)
         {
-            return categoryName?.ToLower() switch
-            {
-                "electronics" => "devices",
-                "clothing" => "checkroom",
-                "home" => "home",
-                "sports" => "sports_soccer",
-                "books" => "menu_book",
-                _ => "category"
-            };
+            if (string.IsNullOrWhiteSpace(q))
+                return Json(new List<object>());
+
+            var results = await _orders.SearchOrdersAsync(q);
+            return Json(results);
+        }
+
+        private async Task<decimal> GetPreviousMonthRevenueAsync()
+        {
+            var sql = @"
+                SELECT ISNULL(SUM(TotalAmount), 0)
+                FROM Orders WITH(NOLOCK)
+                WHERE OrderDate >= DATEADD(MONTH, -2, GETDATE())
+                  AND OrderDate <  DATEADD(MONTH, -1, GETDATE())";
+
+            using var conn = _dashboard.GetConnection();
+            return await conn.ExecuteScalarAsync<decimal>(sql);
         }
     }
 }

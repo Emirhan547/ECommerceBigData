@@ -1,12 +1,13 @@
 ﻿namespace ECommerceBigData.Dtos
 {
-    public class LastOrderDto
+    public class OrderSearchDto
     {
         public int OrderId { get; set; }
         public string CustomerName { get; set; }
+        public string Country { get; set; }
+        public string City { get; set; }
         public decimal TotalAmount { get; set; }
         public DateTime OrderDate { get; set; }
-        // YENİ: durum bilgisi
         public string Status { get; set; }
     }
 }
