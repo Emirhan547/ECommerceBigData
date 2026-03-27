@@ -1,0 +1,57 @@
+﻿@model ECommerceBigData.Models.DashboardViewModel
+
+<section class="panel p-4">
+    <form method="get" class="grid grid-cols-1 md:grid-cols-6 gap-3 items-end">
+        <div>
+            <label class="text-xs text-zinc-400">From</label>
+            <input type="date" name="from" value="@(Model.Filters.From?.ToString("yyyy-MM-dd") ?? Model.Filters.EffectiveFrom.ToString("yyyy-MM-dd"))" class="w-full bg-zinc-900 border-zinc-700 rounded-lg" />
+        </div>
+        <div>
+            <label class="text-xs text-zinc-400">To</label>
+            <input type="date" name="to" value="@(Model.Filters.To?.ToString("yyyy-MM-dd") ?? Model.Filters.EffectiveTo.ToString("yyyy-MM-dd"))" class="w-full bg-zinc-900 border-zinc-700 rounded-lg" />
+        </div>
+        <div>
+            <label class="text-xs text-zinc-400">Country</label>
+            <select name="country" class="w-full bg-zinc-900 border-zinc-700 rounded-lg">
+                <option value="">All Countries</option>
+                @foreach (var country in Model.AvailableCountries)
+                {
+                    <option value="@country" selected="@(Model.Filters.Country == country ? "selected" : null)">@country</option>
+                }
+            </select>
+        </div>
+        <div>
+            <label class="text-xs text-zinc-400">City</label>
+            <select name="city" class="w-full bg-zinc-900 border-zinc-700 rounded-lg">
+                <option value="">All Cities</option>
+                @foreach (var city in Model.AvailableCities)
+                {
+                    <option value="@city" selected="@(Model.Filters.City == city ? "selected" : null)">@city</option>
+                }
+            </select>
+        </div>
+        <div>
+            <label class="text-xs text-zinc-400">Category</label>
+            <select name="category" class="w-full bg-zinc-900 border-zinc-700 rounded-lg">
+                <option value="">All Categories</option>
+                @foreach (var category in Model.AvailableCategories)
+                {
+                    <option value="@category" selected="@(Model.Filters.Category == category ? "selected" : null)">@category</option>
+                }
+            </select>
+        </div>
+        <div>
+            <label class="text-xs text-zinc-400">Segment</label>
+            <div class="flex gap-2">
+                <select name="segment" class="flex-1 bg-zinc-900 border-zinc-700 rounded-lg">
+                    <option value="">All Segments</option>
+                    @foreach (var segment in Model.AvailableSegments)
+                    {
+                        <option value="@segment" selected="@(Model.Filters.Segment == segment ? "selected" : null)">@segment</option>
+                    }
+                </select>
+                <button class="bg-sky-500 hover:bg-sky-400 px-4 rounded-lg text-sm font-semibold" type="submit">Apply</button>
+            </div>
+        </div>
+    </form>
+</section>

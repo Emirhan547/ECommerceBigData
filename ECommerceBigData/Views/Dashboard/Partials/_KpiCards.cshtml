@@ -1,0 +1,47 @@
+﻿@model ECommerceBigData.Models.DashboardViewModel
+@{
+    string TrendClass(decimal value) => value >= 0 ? "text-emerald-400" : "text-rose-400";
+    string TrendIcon(decimal value) => value >= 0 ? "trending_up" : "trending_down";
+}
+
+<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <article class="panel p-5">
+        <p class="text-zinc-500 text-xs uppercase">Total Revenue</p>
+        <h4 class="text-2xl font-bold">@Model.Summary.TotalRevenue.ToString("C0")</h4>
+        <p class="text-xs @TrendClass(Model.RevenueGrowthRate)"><span class="material-symbols-outlined text-sm align-middle">@TrendIcon(Model.RevenueGrowthRate)</span> @Model.RevenueGrowthRate.ToString("F1")% vs prev period</p>
+    </article>
+    <article class="panel p-5">
+        <p class="text-zinc-500 text-xs uppercase">Total Orders</p>
+        <h4 class="text-2xl font-bold">@Model.Summary.TotalOrders.ToString("N0")</h4>
+        <p class="text-xs @TrendClass(Model.OrdersGrowthRate)"><span class="material-symbols-outlined text-sm align-middle">@TrendIcon(Model.OrdersGrowthRate)</span> @Model.OrdersGrowthRate.ToString("F1")% vs prev period</p>
+    </article>
+    <article class="panel p-5">
+        <p class="text-zinc-500 text-xs uppercase">Total Customers</p>
+        <h4 class="text-2xl font-bold">@Model.Summary.TotalCustomers.ToString("N0")</h4>
+        <p class="text-xs @TrendClass(Model.CustomersGrowthRate)"><span class="material-symbols-outlined text-sm align-middle">@TrendIcon(Model.CustomersGrowthRate)</span> @Model.CustomersGrowthRate.ToString("F1")% vs prev period</p>
+    </article>
+    <article class="panel p-5">
+        <p class="text-zinc-500 text-xs uppercase">Avg Order Value</p>
+        <h4 class="text-2xl font-bold">@Model.Summary.AvgOrderValue.ToString("C2")</h4>
+        <p class="text-xs text-zinc-400">Filter scoped AOV</p>
+    </article>
+</section>
+
+<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <article class="panel p-5">
+        <p class="text-zinc-500 text-xs uppercase">Conversion Rate</p>
+        <h4 class="text-xl font-bold">@Model.KpiMetrics.ConversionRate.ToString("F2")%</h4>
+    </article>
+    <article class="panel p-5">
+        <p class="text-zinc-500 text-xs uppercase">Refund Rate</p>
+        <h4 class="text-xl font-bold">@Model.KpiMetrics.RefundRate.ToString("F2")%</h4>
+    </article>
+    <article class="panel p-5">
+        <p class="text-zinc-500 text-xs uppercase">Avg Delivery</p>
+        <h4 class="text-xl font-bold">@Model.KpiMetrics.AvgDeliveryDays.ToString("F1") gün</h4>
+    </article>
+    <article class="panel p-5">
+        <p class="text-zinc-500 text-xs uppercase">Avg CLV</p>
+        <h4 class="text-xl font-bold">@Model.KpiMetrics.AvgCLV.ToString("C2")</h4>
+    </article>
+</section>

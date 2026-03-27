@@ -1,0 +1,58 @@
+﻿@model ECommerceBigData.Models.DashboardViewModel
+
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+    <article class="panel p-5 lg:col-span-5 relative">
+        <h3 class="font-bold mb-2">Hızlı Sipariş Arama</h3>
+        <input id="dashboardSearchInput" type="text" placeholder="Order ID veya müşteri adı yaz..." class="w-full bg-zinc-900 border-zinc-700 rounded-lg" />
+        <div id="searchState" class="text-xs text-zinc-500 mt-2">Arama yapmak için yazmaya başlayın.</div>
+        <div id="searchResults" class="hidden absolute left-5 right-5 top-[95px] bg-zinc-950 border border-zinc-700 rounded-lg max-h-80 overflow-y-auto z-40"></div>
+    </article>
+
+    <article class="panel p-5 lg:col-span-7">
+        <div class="flex justify-between items-center mb-2">
+            <h3 class="font-bold">Recent Orders</h3>
+            <span class="text-xs text-zinc-500">Top 10</span>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="text-zinc-500 text-xs uppercase border-b border-zinc-800">
+                        <th class="text-left py-2">Order</th>
+                        <th class="text-left py-2">Customer</th>
+                        <th class="text-left py-2">Date</th>
+                        <th class="text-right py-2">Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var order in Model.LastOrders.Take(10))
+                    {
+                        <tr class="border-b border-zinc-900">
+                            <td class="py-2">#@order.OrderId</td>
+                            <td class="py-2">@order.CustomerName</td>
+                            <td class="py-2">@order.OrderDate.ToString("dd MMM yyyy")</td>
+                            <td class="py-2 text-right">@order.TotalAmount.ToString("C2")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </article>
+</section>
+
+<section class="panel p-5">
+    <h3 class="font-bold mb-2">Sales by Category</h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+        @foreach (var category in Model.CategorySales.Take(9))
+        {
+            <div class="bg-zinc-900 rounded-lg p-3">
+                <div class="flex justify-between text-sm">
+                    <span>@category.CategoryName</span>
+                    <span>@category.TotalSales.ToString("C0")</span>
+                </div>
+                <div class="w-full h-2 bg-zinc-800 rounded-full mt-2 overflow-hidden">
+                    <div class="h-full bg-sky-400" style="width:@Math.Min(category.Percentage, 100)%"></div>
+                </div>
+            </div>
+        }
+    </div>
+</section>

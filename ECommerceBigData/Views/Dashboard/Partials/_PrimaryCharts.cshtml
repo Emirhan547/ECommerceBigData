@@ -1,0 +1,29 @@
+﻿@model ECommerceBigData.Models.DashboardViewModel
+
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+    <article class="panel p-5 lg:col-span-8">
+        <div class="flex justify-between items-center mb-2">
+            <h3 class="font-bold">Daily Sales (Drill-down supported)</h3>
+        </div>
+        <canvas id="dailySalesChart" height="120"></canvas>
+    </article>
+    <article class="panel p-5 lg:col-span-4">
+        <h3 class="font-bold mb-2">Revenue by Country</h3>
+        <canvas id="countrySalesChart" height="150"></canvas>
+    </article>
+</section>
+
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+    <article class="panel p-5 lg:col-span-5">
+        <h3 class="font-bold mb-2">Top Products</h3>
+        <canvas id="topProductsChart" height="140"></canvas>
+    </article>
+    <article class="panel p-5 lg:col-span-3">
+        <h3 class="font-bold mb-2">Sales by City</h3>
+        <canvas id="citySalesChart" height="140"></canvas>
+    </article>
+    <article class="panel p-5 lg:col-span-4">
+        <h3 class="font-bold mb-2">Customer Segment Distribution</h3>
+        <canvas id="segmentChart" height="140"></canvas>
+    </article>
+</section>

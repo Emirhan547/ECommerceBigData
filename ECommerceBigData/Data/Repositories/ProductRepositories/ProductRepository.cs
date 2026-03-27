@@ -2,6 +2,7 @@
 using ECommerceBigData.Data.Context;
 using ECommerceBigData.Data.Repositories.CustomerRepositories;
 using ECommerceBigData.Dtos;
+using ECommerceBigData.Models;
 
 namespace ECommerceBigData.Data.Repositories.ProductRepositories
 {
@@ -10,26 +11,36 @@ namespace ECommerceBigData.Data.Repositories.ProductRepositories
         private readonly AppDbContext _context;
         public ProductRepository(AppDbContext context) => _context = context;
 
-        public async Task<List<TopProductDto>> GetTopProductsAsync()
+        public async Task<List<TopProductDto>> GetTopProductsAsync(DashboardFilters? filters = null)
         {
+            filters ??= new DashboardFilters();
             var sql = @"
                 SELECT TOP 10
-                    p.Name                         AS ProductName,
-                    ISNULL(SUM(od.Quantity), 0)    AS TotalQuantity
+                    p.Name AS ProductName,
+                    ISNULL(SUM(od.Quantity), 0) AS TotalQuantity
                 FROM Products p WITH(NOLOCK)
                 LEFT JOIN OrderDetails od WITH(NOLOCK) ON od.ProductId = p.Id
+ LEFT JOIN Orders o WITH(NOLOCK) ON o.Id = od.OrderId
+                LEFT JOIN Categories c WITH(NOLOCK) ON c.Id = p.CategoryId
+                WHERE (o.Id IS NULL OR (
+                    o.OrderDate >= @from AND o.OrderDate < @to
+                    AND (@country IS NULL OR o.Country = @country)
+                    AND (@city IS NULL OR o.City = @city)
+                ))
+                  AND (@category IS NULL OR c.Name = @category)
                 GROUP BY p.Name
                 HAVING ISNULL(SUM(od.Quantity), 0) > 0
                 ORDER BY TotalQuantity DESC";
 
             using var conn = _context.CreateConnection();
-            var result = (await conn.QueryAsync<TopProductDto>(sql)).ToList();
+            var result = (await conn.QueryAsync<TopProductDto>(sql, filters.ToSqlParams())).ToList();
 
             if (!result.Any())
+            {
                 result = Enumerable.Range(1, 5)
                     .Select(i => new TopProductDto { ProductName = $"Ürün {i}", TotalQuantity = 50 - i * 5 })
                     .ToList();
-
+            }
             return result;
         }
 
