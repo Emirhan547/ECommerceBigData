@@ -183,37 +183,54 @@
             <!-- Metrics Cards - Dinamik -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <!-- Total Revenue Kartı -->
-                <div class="mt-6 flex items-center gap-2">
-                    <span class="flex items-center text-secondary text-[10px] font-bold bg-secondary/10 px-2 py-0.5 rounded-full">
-                        <span class="material-symbols-outlined text-[12px] mr-1">trending_up</span>
-                        @(Model.RevenueGrowthRate.ToString("F1"))%
-                    </span>
-                    <span class="text-zinc-500 text-[10px]">vs last month</span>
-                </div>
-
-                <!-- Total Orders Kartı -->
-                <div class="mt-6 flex items-center gap-2">
-                    <span class="flex items-center text-secondary text-[10px] font-bold bg-secondary/10 px-2 py-0.5 rounded-full">
-                        <span class="material-symbols-outlined text-[12px] mr-1">trending_up</span>
-                        @(Model.OrdersGrowthRate.ToString("F1"))%
-                    </span>
-                    <span class="text-zinc-500 text-[10px]">vs last month</span>
-                </div>
-
-                <!-- Total Customers Kartı -->
-                <div class="mt-6 flex items-center gap-2">
-                    <span class="flex items-center text-secondary text-[10px] font-bold bg-secondary/10 px-2 py-0.5 rounded-full">
-                        <span class="material-symbols-outlined text-[12px] mr-1">trending_up</span>
-                        @(Model.CustomersGrowthRate.ToString("F1"))%
-                    </span>
-                    <span class="text-zinc-500 text-[10px]">active this week</span>
-                </div>
-
-                <!-- Total Customers -->
                 <div class="bg-surface-container p-6 rounded-xl flex flex-col justify-between relative overflow-hidden">
                     <div class="flex items-start justify-between">
                         <div class="space-y-1">
-                            <span class="text-zinc-50uyzz0 text-xs font-medium uppercase tracking-widest">Total Customers</span>
+                            <span class="text-zinc-500 text-xs font-medium uppercase tracking-widest">Total Revenue</span>
+                            <div class="text-2xl font-extrabold text-white font-headline">
+                                @(Model.Summary?.TotalRevenue.ToString("C0") ?? "$0")
+                            </div>
+                        </div>
+                        <div class="bg-primary/10 p-2 rounded-lg text-primary">
+                            <span class="material-symbols-outlined text-xl">payments</span>
+                        </div>
+                    </div>
+                    <div class="mt-6 flex items-center gap-2">
+                        <span class="flex items-center text-secondary text-[10px] font-bold bg-secondary/10 px-2 py-0.5 rounded-full">
+                            <span class="material-symbols-outlined text-[12px] mr-1">trending_up</span>
+                            @(Model.RevenueGrowthRate.ToString("F1"))%
+                        </span>
+                        <span class="text-zinc-500 text-[10px]">vs last month</span>
+                    </div>
+                </div>
+
+                <div class="bg-surface-container p-6 rounded-xl flex flex-col justify-between relative overflow-hidden">
+                    <div class="flex items-start justify-between">
+                        <div class="space-y-1">
+                            <span class="text-zinc-500 text-xs font-medium uppercase tracking-widest">Total Orders</span>
+                            <div class="text-2xl font-extrabold text-white font-headline">
+                                @(Model.Summary?.TotalOrders.ToString("N0") ?? "0")
+                            </div>
+                        </div>
+                        <div class="bg-tertiary/10 p-2 rounded-lg text-tertiary">
+                            <span class="material-symbols-outlined text-xl">shopping_cart</span>
+                        </div>
+                    </div>
+                    <div class="mt-6 flex items-center gap-2">
+                        <span class="flex items-center text-secondary text-[10px] font-bold bg-secondary/10 px-2 py-0.5 rounded-full">
+                            <span class="material-symbols-outlined text-[12px] mr-1">trending_up</span>
+                            @(Model.OrdersGrowthRate.ToString("F1"))%
+                        </span>
+                        <span class="text-zinc-500 text-[10px]">vs last month</span>
+                    </div>
+                </div>
+
+                <!-- Total Customers Kartı -->
+                
+                <div class="bg-surface-container p-6 rounded-xl flex flex-col justify-between relative overflow-hidden">
+                    <div class="flex items-start justify-between">
+                        <div class="space-y-1">
+                            <span class="text-zinc-500 text-xs font-medium uppercase tracking-widest">Total Customers</span>
                             <div class="text-2xl font-extrabold text-white font-headline">
                                 @(Model.Summary?.TotalCustomers.ToString("N0") ?? "0")
                             </div>
@@ -225,7 +242,7 @@
                     <div class="mt-6 flex items-center gap-2">
                         <span class="flex items-center text-secondary text-[10px] font-bold bg-secondary/10 px-2 py-0.5 rounded-full">
                             <span class="material-symbols-outlined text-[12px] mr-1">trending_up</span>
-                            +18.1%
+                            @(Model.CustomersGrowthRate.ToString("F1"))%
                         </span>
                         <span class="text-zinc-500 text-[10px]">active this week</span>
                     </div>
@@ -246,7 +263,7 @@
                     </div>
                     <div class="mt-6 flex items-center gap-2">
                         <span class="flex items-center text-zinc-400 text-[10px] font-bold bg-zinc-800 px-2 py-0.5 rounded-full">
-                            +5.2%
+                            @(Model.OrdersGrowthRate.ToString("F1"))%
                         </span>
                         <span class="text-zinc-500 text-[10px]">from last month</span>
                     </div>
@@ -432,7 +449,12 @@
     <!-- Chart.js Scripts -->
     <script>
         (function() {
-            // Daily Sales Line Chart
+           const getValue = (obj, pascalName, camelName) => {
+                if (!obj) return null;
+                if (Object.prototype.hasOwnProperty.call(obj, pascalName)) return obj[pascalName];
+                if (Object.prototype.hasOwnProperty.call(obj, camelName)) return obj[camelName];
+                return null;
+            };
             const dailySalesData = @Html.Raw(Json.Serialize(Model.DailySales ?? new List<ECommerceBigData.Dtos.DailySalesDto>()));
             const dailySalesCtx = document.getElementById('dailySalesChart')?.getContext('2d');
             if (dailySalesCtx && dailySalesData.length > 0) {
@@ -440,12 +462,12 @@
                     type: 'line',
                     data: {
                         labels: dailySalesData.map(x => {
-                            const date = new Date(x.Date);
+                            const date = new Date(getValue(x, 'Date', 'date'));
                             return date.toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' });
                         }),
                         datasets: [{
                             label: 'Sales',
-                            data: dailySalesData.map(x => x.TotalSales),
+                           data: dailySalesData.map(x => getValue(x, 'TotalSales', 'totalSales') ?? 0),
                             borderColor: '#89ceff',
                             backgroundColor: 'rgba(137, 206, 255, 0.1)',
                             borderWidth: 2,
@@ -492,9 +514,9 @@
                 new Chart(countrySalesCtx, {
                     type: 'pie',
                     data: {
-                        labels: countrySalesData.map(x => x.Country),
+                      labels: countrySalesData.map(x => getValue(x, 'Country', 'country') ?? 'Unknown'),
                         datasets: [{
-                            data: countrySalesData.map(x => x.TotalSales),
+                           data: countrySalesData.map(x => getValue(x, 'TotalSales', 'totalSales') ?? 0),
                             backgroundColor: colors.slice(0, countrySalesData.length),
                             borderWidth: 0
                         }]
@@ -528,16 +550,13 @@
                 new Chart(topProductsCtx, {
                     type: 'bar',
                     data: {
-                               labels: topProductsData.map(x => {
-            const name = x.ProductName || "Unknown";
-
-            return name.length > 20
-                ? name.substring(0, 18) + "..."
-                : name;
-        }),
+                              labels: topProductsData.map(x => {
+                            const name = getValue(x, 'ProductName', 'productName') ?? 'Unknown';
+                            return name.length > 20 ? name.substring(0, 18) + "..." : name;
+                        }),
                         datasets: [{
                             label: 'Units Sold',
-                            data: topProductsData.map(x => x.TotalQuantity),
+                           data: topProductsData.map(x => getValue(x, 'TotalQuantity', 'totalQuantity') ?? 0),
                             backgroundColor: '#89ceff',
                             borderRadius: 8,
                             barPercentage: 0.7
@@ -576,9 +595,9 @@
                 new Chart(citySalesCtx, {
                     type: 'pie',
                     data: {
-                        labels: citySalesData.map(x => x.City),
+                       labels: citySalesData.map(x => getValue(x, 'City', 'city') ?? 'Unknown'),
                         datasets: [{
-                            data: citySalesData.map(x => x.TotalSales),
+                           data: citySalesData.map(x => getValue(x, 'TotalSales', 'totalSales') ?? 0),
                             backgroundColor: colors.slice(0, citySalesData.length),
                             borderWidth: 0
                         }]
