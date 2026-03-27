@@ -528,7 +528,13 @@
                 new Chart(topProductsCtx, {
                     type: 'bar',
                     data: {
-                        labels: topProductsData.map(x => x.ProductName.length > 20 ? x.ProductName.substring(0, 18) + "..." : x.ProductName),
+                               labels: topProductsData.map(x => {
+            const name = x.ProductName || "Unknown";
+
+            return name.length > 20
+                ? name.substring(0, 18) + "..."
+                : name;
+        }),
                         datasets: [{
                             label: 'Units Sold',
                             data: topProductsData.map(x => x.TotalQuantity),
