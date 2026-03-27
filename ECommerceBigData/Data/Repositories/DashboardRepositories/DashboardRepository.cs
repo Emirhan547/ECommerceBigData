@@ -35,12 +35,12 @@ public class DashboardRepository : IDashboardRepository
                 COUNT(*) AS TotalOrders,
                 COUNT(DISTINCT o.CustomerId) AS TotalCustomers,
                 ISNULL(AVG(o.TotalAmount), 0) AS AvgOrderValue
-            FROM Orders o WITH(NOLOCK)
+           FROM Orders o
             WHERE o.OrderDate >= @from AND o.OrderDate < @to
               AND (@country IS NULL OR o.Country = @country)
               AND (@city IS NULL OR o.City = @city)
               AND (@segment IS NULL OR EXISTS(
-                  SELECT 1 FROM CustomerSegments cs WITH(NOLOCK)
+                 SELECT 1 FROM CustomerSegments cs
                   WHERE cs.CustomerId = o.CustomerId AND cs.Segment = @segment
               ))";
 
@@ -54,7 +54,7 @@ public class DashboardRepository : IDashboardRepository
             SELECT
                 CAST(o.OrderDate AS DATE) AS Date,
                 ISNULL(SUM(o.TotalAmount), 0) AS TotalSales
-            FROM Orders o WITH(NOLOCK)
+            FROM Orders o
             WHERE o.OrderDate >= @from AND o.OrderDate < @to
               AND (@country IS NULL OR o.Country = @country)
               AND (@city IS NULL OR o.City = @city)
@@ -83,7 +83,7 @@ public class DashboardRepository : IDashboardRepository
             SELECT TOP 10
                 o.Country,
                 ISNULL(SUM(o.TotalAmount), 0) AS TotalSales
-            FROM Orders o WITH(NOLOCK)
+           FROM Orders o
             WHERE o.OrderDate >= @from AND o.OrderDate < @to
               AND o.Country IS NOT NULL
               AND (@country IS NULL OR o.Country = @country)
@@ -101,7 +101,7 @@ public async Task<List<CitySalesDto>> GetCitySalesAsync(DashboardFilters filters
             SELECT TOP 10
                 o.City,
                 ISNULL(SUM(o.TotalAmount), 0) AS TotalSales
-            FROM Orders o WITH(NOLOCK)
+            FROM Orders o
             WHERE o.OrderDate >= @from AND o.OrderDate < @to
               AND o.City IS NOT NULL
               AND (@country IS NULL OR o.Country = @country)
@@ -119,10 +119,10 @@ public async Task<List<CategorySalesDto>> GetCategorySalesAsync(DashboardFilters
             SELECT
                 c.Name AS CategoryName,
                 ISNULL(SUM(od.TotalPrice), 0) AS TotalSales
-            FROM Categories c WITH(NOLOCK)
-            LEFT JOIN Products p WITH(NOLOCK) ON p.CategoryId = c.Id
-            LEFT JOIN OrderDetails od WITH(NOLOCK) ON od.ProductId = p.Id
-            LEFT JOIN Orders o WITH(NOLOCK) ON o.Id = od.OrderId
+           FROM Categories c
+            LEFT JOIN Products p ON p.CategoryId = c.Id
+            LEFT JOIN OrderDetails od ON od.ProductId = p.Id
+            LEFT JOIN Orders o ON o.Id = od.OrderId
             WHERE (o.Id IS NULL OR (
                 o.OrderDate >= @from AND o.OrderDate < @to
                 AND (@country IS NULL OR o.Country = @country)
@@ -164,7 +164,7 @@ public async Task<List<MonthlyRevenueDto>> GetMonthlyRevenueAsync(DashboardFilte
             DATEFROMPARTS(YEAR(o.OrderDate), MONTH(o.OrderDate), 1) AS MonthStart,
             ISNULL(SUM(o.TotalAmount), 0) AS TotalRevenue,
             COUNT(*) AS TotalOrders
-        FROM Orders o WITH(NOLOCK)
+       FROM Orders o
         WHERE o.OrderDate >= DATEADD(MONTH, -@monthCount, @to)
           AND o.OrderDate < @to
           AND (@country IS NULL OR o.Country = @country)
@@ -186,7 +186,7 @@ public async Task<List<MonthlyRevenueDto>> GetMonthlyRevenueAsync(DashboardFilte
                 DATEPART(WEEKDAY, o.OrderDate) AS DayOfWeek,
                 DATEPART(HOUR, o.OrderDate) AS [Hour],
                 COUNT(*) AS OrderCount
-            FROM Orders o WITH(NOLOCK)
+           FROM Orders o
             WHERE o.OrderDate >= DATEADD(MONTH, -3, @to)
               AND o.OrderDate < @to
               AND (@country IS NULL OR o.Country = @country)
@@ -209,9 +209,9 @@ public async Task<List<TopCustomerDto>> GetTopCustomersAsync(DashboardFilters fi
                 COUNT(o.Id) AS TotalOrders,
                 ISNULL(SUM(o.TotalAmount), 0) AS LifetimeValue,
                 ISNULL(cs.Segment, 'Regular') AS Segment
-            FROM Customers c WITH(NOLOCK)
-            JOIN Orders o WITH(NOLOCK) ON o.CustomerId = c.Id
-            LEFT JOIN CustomerSegments cs WITH(NOLOCK) ON cs.CustomerId = c.Id
+           FROM Customers c
+            JOIN Orders o ON o.CustomerId = c.Id
+            LEFT JOIN CustomerSegments cs ON cs.CustomerId = c.Id
             WHERE o.OrderDate >= @from AND o.OrderDate < @to
               AND (@country IS NULL OR c.Country = @country)
               AND (@city IS NULL OR c.City = @city)
@@ -231,14 +231,14 @@ public async Task<KpiMetricsDto> GetKpiMetricsAsync(DashboardFilters filters)
     const string conversionQuery = @"
             SELECT CAST(SUM(CAST(pv.Purchases AS FLOAT)) AS FLOAT)
                  / NULLIF(SUM(CAST(pv.ViewCount AS FLOAT)), 0) * 100
-            FROM ProductViews pv WITH(NOLOCK)
+           FROM ProductViews pv
            WHERE pv.ViewDate >= @from AND pv.ViewDate < @to";
 
         const string refundQuery = @"
             SELECT CAST(SUM(CASE WHEN st.Status = 'Returned' THEN 1 ELSE 0 END) * 100.0
                  / NULLIF(COUNT(*), 0) AS FLOAT)
-            FROM ShipmentTracking st WITH(NOLOCK)
-            JOIN Orders o WITH(NOLOCK) ON o.Id = st.OrderId
+           FROM ShipmentTracking st
+            JOIN Orders o ON o.Id = st.OrderId
             WHERE o.OrderDate >= @from AND o.OrderDate < @to
               AND (@country IS NULL OR o.Country = @country)
               AND (@city IS NULL OR o.City = @city)";
@@ -246,8 +246,8 @@ public async Task<KpiMetricsDto> GetKpiMetricsAsync(DashboardFilters filters)
        
         const string deliveryQuery = @"
             SELECT AVG(CAST(st.EstimatedDays AS FLOAT))
-            FROM ShipmentTracking st WITH(NOLOCK)
-            JOIN Orders o WITH(NOLOCK) ON o.Id = st.OrderId
+          FROM ShipmentTracking st
+            JOIN Orders o ON o.Id = st.OrderId
             WHERE o.OrderDate >= @from AND o.OrderDate<@to
               AND st.EstimatedDays IS NOT NULL
               AND(@country IS NULL OR o.Country = @country)
@@ -257,7 +257,7 @@ public async Task<KpiMetricsDto> GetKpiMetricsAsync(DashboardFilters filters)
             SELECT AVG(total_spend)
             FROM (
                 SELECT o.CustomerId, SUM(o.TotalAmount) AS total_spend
-                FROM Orders o WITH(NOLOCK)
+               FROM Orders o
                 WHERE o.OrderDate >= @from AND o.OrderDate < @to
                   AND (@country IS NULL OR o.Country = @country)
                   AND (@city IS NULL OR o.City = @city)
@@ -289,14 +289,10 @@ await Task.WhenAll(convTask, refundTask, deliveryTask, clvTask);
     {
         const string query = @"
             SELECT
-                COUNT(DISTINCT o.Id) AS OrderCount,
-                COUNT(od.Id) AS OrderDetailCount,
-                (SELECT COUNT(*) FROM Products WITH(NOLOCK)) AS ProductCount
-            FROM Orders o WITH(NOLOCK)
-            LEFT JOIN OrderDetails od WITH(NOLOCK) ON od.OrderId = o.Id
-            WHERE o.OrderDate >= @from AND o.OrderDate < @to
-              AND (@country IS NULL OR o.Country = @country)
-              AND (@city IS NULL OR o.City = @city)";
+                (SELECT COUNT(*) FROM Orders) AS OrderCount,
+                (SELECT COUNT(*) FROM OrderDetails) AS OrderDetailCount,
+                (SELECT COUNT(*) FROM Products) AS ProductCount,
+                (SELECT COUNT(*) FROM Customers) AS CustomerCount";
 
         using var conn = _context.CreateConnection();
         return await conn.QueryFirstAsync<EntityOverviewDto>(query, filters.ToSqlParams());
@@ -307,8 +303,8 @@ await Task.WhenAll(convTask, refundTask, deliveryTask, clvTask);
         const string query = @"
             WITH scoped AS (
                 SELECT ISNULL(cs.Segment, 'Regular') AS Segment
-                FROM Orders o WITH(NOLOCK)
-                LEFT JOIN CustomerSegments cs WITH(NOLOCK) ON cs.CustomerId = o.CustomerId
+               FROM Orders o
+                LEFT JOIN CustomerSegments cs ON cs.CustomerId = o.CustomerId
                 WHERE o.OrderDate >= @from AND o.OrderDate < @to
                   AND (@country IS NULL OR o.Country = @country)
                   AND (@city IS NULL OR o.City = @city)
@@ -334,7 +330,7 @@ return (await conn.QueryAsync<SegmentDistributionDto>(query, filters.ToSqlParams
         {
             const string query = @"
                 SELECT DISTINCT Country
-                FROM Orders WITH(NOLOCK)
+              FROM Orders
                 WHERE Country IS NOT NULL
                   AND OrderDate >= @from AND OrderDate < @to
                   AND (@country IS NULL OR Country = @country)
@@ -351,7 +347,7 @@ return (await conn.QueryAsync<SegmentDistributionDto>(query, filters.ToSqlParams
         {
             const string query = @"
                 SELECT DISTINCT City
-                FROM Orders WITH(NOLOCK)
+                FROM Orders
                 WHERE City IS NOT NULL
                   AND OrderDate >= @from AND OrderDate < @to
                   AND (@country IS NULL OR Country = @country)
@@ -369,10 +365,10 @@ return (await conn.QueryAsync<SegmentDistributionDto>(query, filters.ToSqlParams
             const string query = @"
               
             SELECT DISTINCT c.Name
-            FROM Categories c WITH(NOLOCK)
-                JOIN Products p WITH(NOLOCK) ON p.CategoryId = c.Id
-                JOIN OrderDetails od WITH(NOLOCK) ON od.ProductId = p.Id
-                JOIN Orders o WITH(NOLOCK) ON o.Id = od.OrderId
+           FROM Categories c
+                JOIN Products p ON p.CategoryId = c.Id
+                JOIN OrderDetails od ON od.ProductId = p.Id
+                JOIN Orders o ON o.Id = od.OrderId
                 WHERE o.OrderDate >= @from AND o.OrderDate<@to
                   AND(@country IS NULL OR o.Country = @country)
                   AND(@city IS NULL OR o.City = @city)
@@ -390,8 +386,8 @@ return (await conn.QueryAsync<SegmentDistributionDto>(query, filters.ToSqlParams
             const string query = @"
                
             SELECT DISTINCT ISNULL(cs.Segment, 'Regular')
-                FROM Orders o WITH(NOLOCK)
-                LEFT JOIN CustomerSegments cs WITH(NOLOCK) ON cs.CustomerId = o.CustomerId
+               FROM Orders o
+                LEFT JOIN CustomerSegments cs ON cs.CustomerId = o.CustomerId
                 WHERE o.OrderDate >= @from AND o.OrderDate<@to
                   AND(@country IS NULL OR o.Country = @country)
                   AND(@city IS NULL OR o.City = @city)

@@ -12,7 +12,7 @@ namespace ECommerceBigData.Data.Repositories.CustomerRepositories
         public async Task<int> GetTotalCustomerCountAsync()
         {
             using var conn = _context.CreateConnection();
-            return await conn.ExecuteScalarAsync<int>("SELECT COUNT(*) FROM Customers WITH(NOLOCK)");
+            return await conn.ExecuteScalarAsync<int>("SELECT COUNT(*) FROM Customers");
         }
 
         public async Task<PagedResult<CustomerListDto>> GetPagedCustomersAsync(
@@ -29,8 +29,8 @@ namespace ECommerceBigData.Data.Repositories.CustomerRepositories
 
             var countSql = $@"
                 SELECT COUNT(*)
-                FROM Customers c WITH(NOLOCK)
-                LEFT JOIN CustomerSegments cs WITH(NOLOCK) ON cs.CustomerId = c.Id
+               FROM Customers c
+                LEFT JOIN CustomerSegments cs ON cs.CustomerId = c.Id
                 {where}";
 
             var dataSql = $@"
@@ -44,14 +44,14 @@ namespace ECommerceBigData.Data.Repositories.CustomerRepositories
                     ISNULL(stats.order_count, 0)               AS TotalOrders,
                     ISNULL(stats.total_spend, 0)               AS TotalSpend,
                     stats.last_order_date                      AS LastOrderDate
-                FROM Customers c WITH(NOLOCK)
-                LEFT JOIN CustomerSegments cs WITH(NOLOCK) ON cs.CustomerId = c.Id
+               FROM Customers c
+                LEFT JOIN CustomerSegments cs ON cs.CustomerId = c.Id
                 LEFT JOIN (
                     SELECT CustomerId,
                            COUNT(*) AS order_count,
                            SUM(TotalAmount) AS total_spend,
                            MAX(OrderDate) AS last_order_date
-                    FROM Orders WITH(NOLOCK)
+                    FROM Orders
                     GROUP BY CustomerId
                 ) stats ON stats.CustomerId = c.Id
                 {where}

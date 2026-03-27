@@ -6,59 +6,26 @@
 
 <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
     <article class="panel p-5">
-        <p class="text-zinc-500 text-xs uppercase">Toplam Ciro</p>
-        <h4 class="text-2xl font-bold">@Model.Summary.TotalRevenue.ToString("C0")</h4>
-        <p class="text-xs @TrendClass(Model.RevenueGrowthRate)"><span class="material-symbols-outlined text-sm align-middle">@TrendIcon(Model.RevenueGrowthRate)</span> @Model.RevenueGrowthRate.ToString("F1")% önceki döneme göre</p>
-    </article>
-    <article class="panel p-5">
         <p class="text-zinc-500 text-xs uppercase">Toplam Sipariş</p>
-        <h4 class="text-2xl font-bold">@Model.Summary.TotalOrders.ToString("N0")</h4>
-        <p class="text-xs @TrendClass(Model.OrdersGrowthRate)"><span class="material-symbols-outlined text-sm align-middle">@TrendIcon(Model.OrdersGrowthRate)</span> @Model.OrdersGrowthRate.ToString("F1")% önceki döneme göre</p>
-    </article>
-    <article class="panel p-5">
-        <p class="text-zinc-500 text-xs uppercase">Toplam Müşteri</p>
-        <h4 class="text-2xl font-bold">@Model.Summary.TotalCustomers.ToString("N0")</h4>
-        <p class="text-xs @TrendClass(Model.CustomersGrowthRate)"><span class="material-symbols-outlined text-sm align-middle">@TrendIcon(Model.CustomersGrowthRate)</span> @Model.CustomersGrowthRate.ToString("F1")% önceki döneme göre</p>
-    </article>
-    <article class="panel p-5">
-        <p class="text-zinc-500 text-xs uppercase">Ortalama Sipariş Tutarı</p>
-        <h4 class="text-2xl font-bold">@Model.Summary.AvgOrderValue.ToString("C2")</h4>
-        <p class="text-xs text-zinc-400">Filtre kapsamlı AOV</p>
-    </article>
-</section>
-
-<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-    <article class="panel p-5">
-        <p class="text-zinc-500 text-xs uppercase">Dönüşüm Oranı</p>
-        <h4 class="text-xl font-bold">@Model.KpiMetrics.ConversionRate.ToString("F2")%</h4>
-    </article>
-    <article class="panel p-5">
-        <p class="text-zinc-500 text-xs uppercase">İade Oranı</p>
-        <h4 class="text-xl font-bold">@Model.KpiMetrics.RefundRate.ToString("F2")%</h4>
-    </article>
-    <article class="panel p-5">
-        <p class="text-zinc-500 text-xs uppercase">Ortalama Teslimat</p>
-        <h4 class="text-xl font-bold">@Model.KpiMetrics.AvgDeliveryDays.ToString("F1") gün</h4>
-    </article>
-    <article class="panel p-5">
-        <p class="text-zinc-500 text-xs uppercase">Ortalama CLV</p>
-        <h4 class="text-xl font-bold">@Model.KpiMetrics.AvgCLV.ToString("C2")</h4>
-    </article>
-</section>
-<section class="grid grid-cols-1 md:grid-cols-3 gap-4">
-    <article class="panel p-5">
-        <p class="text-zinc-500 text-xs uppercase">Filtreli Sipariş</p>
         <h4 class="text-xl font-bold">@Model.EntityOverview.OrderCount.ToString("N0")</h4>
         <a href="/Orders" class="text-xs text-sky-400 hover:text-sky-300">Siparişleri görüntüle →</a>
     </article>
     <article class="panel p-5">
-        <p class="text-zinc-500 text-xs uppercase">Sipariş Detay Satırı</p>
+        <p class="text-zinc-500 text-xs uppercase">Sipariş Detayı</p>
         <h4 class="text-xl font-bold">@Model.EntityOverview.OrderDetailCount.ToString("N0")</h4>
-        <p class="text-xs text-zinc-400">OrderDetails tablosundan</p>
+        <a href="/OrderDetails" class="text-xs text-sky-400 hover:text-sky-300">Sipariş Detayları görüntüle →</a>
     </article>
     <article class="panel p-5">
-        <p class="text-zinc-500 text-xs uppercase">Toplam Ürün</p>
-        <h4 class="text-xl font-bold">@Model.EntityOverview.ProductCount.ToString("N0")</h4>
-        <a href="/Products" class="text-xs text-sky-400 hover:text-sky-300">Ürünleri görüntüle →</a>
+        <p class="text-zinc-500 text-xs uppercase">Müşteri Sayısı</p>
+        <h4 class="text-xl font-bold">@Model.EntityOverview.CustomerCount.ToString("N0")</h4>
+        <a href="/Customers" class="text-xs text-sky-400 hover:text-sky-300">Müşterileri görüntüle →</a>
     </article>
+    <article class="panel p-5">
+        <p class="text-zinc-500 text-xs uppercase">Toplam Ciro</p>
+        <h4 class="text-2xl font-bold">@Model.Summary.TotalRevenue.ToString("C0")</h4>
+        <p class="text-xs @TrendClass(Model.RevenueGrowthRate)"><span class="material-symbols-outlined text-sm align-middle">@TrendIcon(Model.RevenueGrowthRate)</span> @Model.RevenueGrowthRate.ToString("F1")% önceki döneme göre</p>
+    </article>
+    
+
+
 </section>

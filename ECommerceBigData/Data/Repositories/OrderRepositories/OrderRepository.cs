@@ -12,7 +12,7 @@ namespace ECommerceBigData.Data.Repositories.OrderRepositories
         public async Task<int> GetTotalOrderCountAsync()
         {
             using var conn = _context.CreateConnection();
-            return await conn.ExecuteScalarAsync<int>("SELECT COUNT(*) FROM Orders WITH(NOLOCK)");
+            return await conn.ExecuteScalarAsync<int>("SELECT COUNT(*) FROM Orders");
         }
 
         public async Task<List<LastOrderDto>> GetLastOrdersAsync()
@@ -24,8 +24,8 @@ namespace ECommerceBigData.Data.Repositories.OrderRepositories
                     o.TotalAmount,
                     o.OrderDate,
                     o.Status
-                FROM Orders o WITH(NOLOCK)
-                JOIN Customers c WITH(NOLOCK) ON c.Id = o.CustomerId
+               FROM Orders o
+                JOIN Customers c ON c.Id = o.CustomerId
                 ORDER BY o.OrderDate DESC";
 
             using var conn = _context.CreateConnection();
@@ -50,7 +50,7 @@ namespace ECommerceBigData.Data.Repositories.OrderRepositories
                 ? "WHERE " + string.Join(" AND ", whereClauses)
                 : string.Empty;
 
-            var countSql = $"SELECT COUNT(*) FROM Orders o WITH(NOLOCK) {where}";
+            var countSql = $"SELECT COUNT(*) FROM Orders o {where}";
 
             var dataSql = $@"
                 SELECT
@@ -61,8 +61,8 @@ namespace ECommerceBigData.Data.Repositories.OrderRepositories
                     o.TotalAmount,
                     o.OrderDate,
                     o.Status
-                FROM Orders o WITH(NOLOCK)
-                JOIN Customers c WITH(NOLOCK) ON c.Id = o.CustomerId
+               FROM Orders o
+                JOIN Customers c ON c.Id = o.CustomerId
                 {where}
                 ORDER BY o.OrderDate DESC
                 OFFSET @offset ROWS
@@ -103,11 +103,11 @@ namespace ECommerceBigData.Data.Repositories.OrderRepositories
             var sql = isNumeric
                 ? @"SELECT TOP 10 o.Id AS OrderId, c.FullName AS CustomerName,
                            o.Country, o.City, o.TotalAmount, o.OrderDate, o.Status
-                    FROM Orders o WITH(NOLOCK) JOIN Customers c ON c.Id = o.CustomerId
+                   FROM Orders o JOIN Customers c ON c.Id = o.CustomerId
                     WHERE o.Id = @orderId"
                 : @"SELECT TOP 10 o.Id AS OrderId, c.FullName AS CustomerName,
                            o.Country, o.City, o.TotalAmount, o.OrderDate, o.Status
-                    FROM Orders o WITH(NOLOCK) JOIN Customers c ON c.Id = o.CustomerId
+                    FROM Orders o JOIN Customers c ON c.Id = o.CustomerId
                     WHERE c.FullName LIKE @like
                     ORDER BY o.OrderDate DESC";
 

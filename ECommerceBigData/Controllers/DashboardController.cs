@@ -4,7 +4,6 @@ using ECommerceBigData.Data.Repositories.OrderRepositories;
 using ECommerceBigData.Data.Repositories.ProductRepositories;
 using ECommerceBigData.ML;
 using ECommerceBigData.Models;
-using ECommerceBigData.Services.Insights;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics.Metrics;
 
@@ -17,22 +16,19 @@ public class DashboardController : Controller
     private readonly IOrderRepository _orderRepository;
     private readonly IWebHostEnvironment _environment;
     private readonly SalesForecastService _salesForecastService;
-    private readonly IExecutiveInsightService _executiveInsightService;
 
     public DashboardController(
         IDashboardRepository dashboard,
         IProductRepository productRepository,
         IOrderRepository orderRepository,
         IWebHostEnvironment environment,
-        SalesForecastService salesForecastService,
-        IExecutiveInsightService executiveInsightService)
+       SalesForecastService salesForecastService)
     {
         _dashboardRepository = dashboard;
         _productRepository = productRepository;
         _orderRepository = orderRepository;
         _environment = environment;
         _salesForecastService = salesForecastService;
-        _executiveInsightService = executiveInsightService;
     }
 
     [HttpGet]
@@ -84,23 +80,7 @@ public class DashboardController : Controller
         return View(model);
     }
 
-    [HttpGet]
-    public async Task<IActionResult> ExecutiveSummary(DateTime? from, DateTime? to, string? country, string? city, string? category, string? segment)
-    {
-        var model = await BuildDashboardModelAsync(from, to, country, city, category, segment);
-        model.ExecutiveInsight = await _executiveInsightService.GenerateAsync(model);
-        model.CurrentPage = "AI Insights";
-        return View(model);
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> RefreshExecutiveSummary(DateTime? from, DateTime? to, string? country, string? city, string? category, string? segment)
-    {
-        var model = await BuildDashboardModelAsync(from, to, country, city, category, segment);
-        model.ExecutiveInsight = await _executiveInsightService.GenerateAsync(model);
-        model.CurrentPage = "AI Insights";
-        return View("ExecutiveSummary", model);
-    }
+   
 
     [HttpGet]
     public async Task<IActionResult> Debug()
@@ -250,7 +230,7 @@ public class DashboardController : Controller
                 ISNULL(SUM(o.TotalAmount), 0) AS Revenue,
                 COUNT(*) AS Orders,
                 COUNT(DISTINCT o.CustomerId) AS Customers
-            FROM Orders o WITH(NOLOCK)
+           FROM Orders o
             WHERE o.OrderDate >= @prevFrom AND o.OrderDate < @prevTo
               AND (@country IS NULL OR o.Country = @country)
               AND (@city IS NULL OR o.City = @city)";

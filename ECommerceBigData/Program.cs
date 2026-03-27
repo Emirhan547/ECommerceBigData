@@ -5,7 +5,6 @@ using ECommerceBigData.Data.Repositories.DashboardRepositories;
 using ECommerceBigData.Data.Repositories.OrderRepositories;
 using ECommerceBigData.Data.Repositories.ProductRepositories;
 using ECommerceBigData.ML;
-using ECommerceBigData.Services.Insights;
 using Microsoft.AspNetCore.Localization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -28,7 +27,6 @@ builder.Services.AddScoped<IDashboardRepository, DashboardRepository>();
 // Cache (2M satr sorgularn hafifletmek iin)
 // Servis kayýtlarý
 builder.Services.AddScoped<SalesForecastService>();
-builder.Services.AddScoped<IExecutiveInsightService, ExecutiveInsightService>();
 
 // Cache (aðýr dashboard sorgularý için)
 builder.Services.AddMemoryCache();

@@ -1,13 +1,17 @@
 ﻿@{
     var currentAction = (ViewContext.RouteData.Values["action"]?.ToString() ?? "Index").ToLowerInvariant();
-    string ActiveClass(string actionName) => currentAction == actionName.ToLowerInvariant() ? "dashboard-sidebar__link is-active" : "dashboard-sidebar__link";
+    var currentController = (ViewContext.RouteData.Values["controller"]?.ToString() ?? "Dashboard").ToLowerInvariant();
+    string ActiveClass(string controllerName, string actionName = "Index")
+        => currentController == controllerName.ToLowerInvariant() && currentAction == actionName.ToLowerInvariant()
+            ? "dashboard-sidebar__link is-active"
+            : "dashboard-sidebar__link";
 }
 <!DOCTYPE html>
 <html lang="@System.Globalization.CultureInfo.CurrentUICulture.Name" class="dark">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - ECommerce Dashboard V4</title>
+    <title>@ViewData["Title"] - E-Ticaret Operasyon Paneli</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
@@ -18,16 +22,15 @@
 <body class="dashboard-body">
     <div class="dashboard-shell">
         <aside id="dashboardSidebar" class="dashboard-sidebar">
-            <div class="dashboard-sidebar__brand">Dashboard V4</div>
+            <div class="dashboard-sidebar__brand">E-Ticaret Operasyon Paneli</div>
             <nav class="dashboard-sidebar__nav">
-                <a class="@ActiveClass("Index")" asp-controller="Dashboard" asp-action="Index">Genel Bakış</a>
-                <a class="@ActiveClass("Sales")" asp-controller="Dashboard" asp-action="Sales">Satış</a>
-                <a class="@ActiveClass("Customers")" asp-controller="Dashboard" asp-action="Customers">Müşteri</a>
-                <a class="@ActiveClass("Products")" asp-controller="Dashboard" asp-action="Products">Ürün</a>
-                <a class="@ActiveClass("Geography")" asp-controller="Dashboard" asp-action="Geography">Coğrafi</a>
-                <a class="@ActiveClass("Forecast")" asp-controller="Dashboard" asp-action="Forecast">Forecast(ML)</a>
-                <a class="@ActiveClass("ExecutiveSummary")" asp-controller="Dashboard" asp-action="ExecutiveSummary">AI Insights</a>
-                <a class="dashboard-sidebar__link" href="#">Ayarlar</a>
+                <a class="@ActiveClass("Dashboard", "Index")" asp-controller="Dashboard" asp-action="Index">Genel Bakış</a>
+                <a class="@ActiveClass("Dashboard", "Sales")" asp-controller="Dashboard" asp-action="Sales">Satış</a>
+                <a class="@ActiveClass("Dashboard", "Customers")" asp-controller="Dashboard" asp-action="Customers">Müşteri</a>
+                <a class="@ActiveClass("Dashboard", "Products")" asp-controller="Dashboard" asp-action="Products">Ürün</a>
+                <a class="@ActiveClass("Dashboard", "Geography")" asp-controller="Dashboard" asp-action="Geography">Coğrafi</a>
+                <a class="@ActiveClass("Dashboard", "Forecast")" asp-controller="Dashboard" asp-action="Forecast">Forecast(ML)</a>
+                <a class="@ActiveClass("Orders", "Index")" asp-controller="Orders" asp-action="Index">Siparişler</a>
             </nav>
         </aside>
 

@@ -18,10 +18,10 @@ namespace ECommerceBigData.Data.Repositories.ProductRepositories
                 SELECT TOP 10
                     p.Name AS ProductName,
                     ISNULL(SUM(od.Quantity), 0) AS TotalQuantity
-                FROM Products p WITH(NOLOCK)
-                LEFT JOIN OrderDetails od WITH(NOLOCK) ON od.ProductId = p.Id
- LEFT JOIN Orders o WITH(NOLOCK) ON o.Id = od.OrderId
-                LEFT JOIN Categories c WITH(NOLOCK) ON c.Id = p.CategoryId
+              FROM Products p
+                LEFT JOIN OrderDetails od ON od.ProductId = p.Id
+ LEFT JOIN Orders o ON o.Id = od.OrderId
+                LEFT JOIN Categories c ON c.Id = p.CategoryId
                 WHERE (o.Id IS NULL OR (
                     o.OrderDate >= @from AND o.OrderDate < @to
                     AND (@country IS NULL OR o.Country = @country)
@@ -35,12 +35,7 @@ namespace ECommerceBigData.Data.Repositories.ProductRepositories
             using var conn = _context.CreateConnection();
             var result = (await conn.QueryAsync<TopProductDto>(sql, filters.ToSqlParams())).ToList();
 
-            if (!result.Any())
-            {
-                result = Enumerable.Range(1, 5)
-                    .Select(i => new TopProductDto { ProductName = $"Ürün {i}", TotalQuantity = 50 - i * 5 })
-                    .ToList();
-            }
+           
             return result;
         }
 
@@ -60,7 +55,7 @@ namespace ECommerceBigData.Data.Repositories.ProductRepositories
                 _ => "total_sold DESC"
             };
 
-            var countSql = $"SELECT COUNT(*) FROM Products p WITH(NOLOCK) {where}";
+            var countSql = $"SELECT COUNT(*) FROM Products p {where}";
 
             var dataSql = $@"
                 SELECT
@@ -72,10 +67,10 @@ namespace ECommerceBigData.Data.Repositories.ProductRepositories
                     ISNULL(SUM(od.Quantity), 0)    AS total_sold,
                     ISNULL(AVG(CAST(r.Rating AS FLOAT)), 0) AS avg_rating,
                     COUNT(DISTINCT r.Id)            AS ReviewCount
-                FROM Products p WITH(NOLOCK)
-                JOIN Categories cat WITH(NOLOCK) ON cat.Id = p.CategoryId
-                LEFT JOIN OrderDetails od WITH(NOLOCK) ON od.ProductId = p.Id
-                LEFT JOIN Reviews r WITH(NOLOCK) ON r.ProductId = p.Id
+               FROM Products p
+                JOIN Categories cat ON cat.Id = p.CategoryId
+                LEFT JOIN OrderDetails od ON od.ProductId = p.Id
+                LEFT JOIN Reviews r ON r.ProductId = p.Id
                 {where}
                 GROUP BY p.Id, p.Name, cat.Name, p.Price, p.Stock
                 ORDER BY {orderBy}

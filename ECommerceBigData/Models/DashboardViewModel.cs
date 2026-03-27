@@ -32,5 +32,4 @@ public class DashboardViewModel
 
     public string CurrentPage { get; set; } = "Genel Bakış";
     public SalesForecastResult? ForecastResult { get; set; }
-    public ExecutiveInsightResult? ExecutiveInsight { get; set; }
 }
