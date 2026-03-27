@@ -1,0 +1,37 @@
+﻿@model ECommerceBigData.Models.DashboardViewModel
+@{
+    ViewData["Title"] = "Forecast (ML)";
+    Layout = "_DashboardLayout";
+    var forecast = Model.ForecastResult;
+}
+<div class="dashboard-page">
+    @await Html.PartialAsync("Partials/_FilterBar", Model)
+
+    <section class="panel p-5">
+        <h3 class="font-bold mb-3">Aylık Ciro/Sipariş Tahmini (3-6-12 Ay)</h3>
+        <canvas id="forecastChart" height="120"></canvas>
+    </section>
+
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        @foreach (var metric in forecast?.Metrics ?? new List<ECommerceBigData.Models.ForecastMetricCard>())
+        {
+            <article class="panel p-4 metric-card">
+                <div>
+                    <p class="text-xs text-zinc-500">Ufuk</p>
+                    <p class="font-semibold">@metric.HorizonLabel</p>
+                </div>
+                <div>
+                    <p class="text-xs text-zinc-500">MAE / RMSE</p>
+                    <p class="font-semibold">@metric.Mae.ToString("N2") / @metric.Rmse.ToString("N2")</p>
+                </div>
+            </article>
+        }
+    </section>
+</div>
+
+@section Scripts {
+    <script>
+        window.forecastData = @Html.Raw(Json.Serialize(Model.ForecastResult));
+    </script>
+    <script src="~/js/dashboard/forecast.js" asp-append-version="true"></script>
+}

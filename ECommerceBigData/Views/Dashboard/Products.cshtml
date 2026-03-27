@@ -1,0 +1,13 @@
+﻿@model ECommerceBigData.Models.DashboardViewModel
+@{
+    ViewData["Title"] = "Ürün";
+    Layout = "_DashboardLayout";
+}
+<div class="dashboard-page">
+    @await Html.PartialAsync("Partials/_FilterBar", Model)
+    @await Html.PartialAsync("Partials/_SearchAndTables", Model)
+</div>
+
+@section Scripts {
+    <script src="~/js/dashboard/search.js" asp-append-version="true"></script>
+}

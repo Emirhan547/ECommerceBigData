@@ -1,6 +1,6 @@
 ﻿(function () {
     const data = window.dashboardData || {};
-
+    const locale = document.documentElement.lang || 'tr-TR';
     const getValue = (obj, pascalName, camelName) => {
         if (!obj) return null;
         if (Object.prototype.hasOwnProperty.call(obj, pascalName)) return obj[pascalName];
@@ -16,9 +16,8 @@
         new Chart(ctx, {
             type: 'line',
             data: {
-                labels: rows.map(x => new Date(getValue(x, 'Date', 'date')).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' })),
-                datasets: [{
-                    label: 'Revenue',
+                labels: rows.map(x => new Date(getValue(x, 'Date', 'date')).toLocaleDateString(locale, { day: 'numeric', month: 'short' })),                datasets: [{
+                    label: 'Ciro',
                     data: rows.map(x => getValue(x, 'TotalSales', 'totalSales') || 0),
                     borderColor: '#38bdf8',
                     backgroundColor: 'rgba(56,189,248,.12)',
@@ -44,8 +43,7 @@
         new Chart(ctx, {
             type: 'pie',
             data: {
-                labels: rows.map(x => getValue(x, labelKey, labelKey.charAt(0).toLowerCase() + labelKey.slice(1)) || 'Unknown'),
-                datasets: [{
+                labels: rows.map(x => getValue(x, labelKey, labelKey.charAt(0).toLowerCase() + labelKey.slice(1)) || 'Bilinmiyor'),                datasets: [{
                     data: rows.map(x => getValue(x, 'TotalSales', 'totalSales') || getValue(x, 'Percentage', 'percentage') || 0),
                     backgroundColor: palette
                 }]
@@ -71,7 +69,7 @@
                     return n.length > 16 ? `${n.slice(0, 16)}...` : n;
                 }),
                 datasets: [{
-                    label: 'Qty',
+                    label: 'Adet',
                     data: rows.map(x => getValue(x, 'TotalQuantity', 'totalQuantity') || 0),
                     backgroundColor: '#38bdf8'
                 }]
@@ -97,14 +95,14 @@
                 datasets: [
                     {
                         type: 'bar',
-                        label: 'Orders',
+                        label: 'Sipariş',
                         yAxisID: 'y1',
                         data: rows.map(x => getValue(x, 'OrderCount', 'orderCount') || 0),
                         backgroundColor: 'rgba(163, 230, 53, .6)'
                     },
                     {
                         type: 'line',
-                        label: 'Revenue',
+                        label: 'Ciro',
                         yAxisID: 'y',
                         data: rows.map(x => getValue(x, 'Revenue', 'revenue') || 0),
                         borderColor: '#38bdf8',
@@ -126,8 +124,7 @@
         const container = document.getElementById('hourlyHeatmap');
         const rows = data.hourlyHeatmap || [];
         if (!container || !rows.length) {
-            if (container) container.innerHTML = '<div class="text-zinc-500 text-sm col-span-12">No heatmap data.</div>';
-            return;
+            if (container) container.innerHTML = '<div class="text-zinc-500 text-sm col-span-12">Isı haritası verisi bulunamadı.</div>';            return;
         }
 
         const max = Math.max(...rows.map(x => getValue(x, 'OrderCount', 'orderCount') || 0), 1);
@@ -139,7 +136,7 @@
                 const cell = document.createElement('div');
                 cell.className = 'heat-cell';
                 cell.style.backgroundColor = `rgba(56, 189, 248, ${intensity})`;
-                cell.title = `Day ${day} | ${h}:00-${h + 1}:59 => ${val} order`;
+                cell.title = `Gün ${day} | ${h}:00-${h + 1}:59 => ${val} sipariş`;
                 container.appendChild(cell);
             }
         }

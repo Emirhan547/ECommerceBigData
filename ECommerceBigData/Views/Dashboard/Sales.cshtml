@@ -1,0 +1,23 @@
+﻿@model ECommerceBigData.Models.DashboardViewModel
+@{
+    ViewData["Title"] = "Satış";
+    Layout = "_DashboardLayout";
+}
+<div class="dashboard-page">
+    @await Html.PartialAsync("Partials/_FilterBar", Model)
+    @await Html.PartialAsync("Partials/_KpiCards", Model)
+    @await Html.PartialAsync("Partials/_PrimaryCharts", Model)
+</div>
+
+@section Scripts {
+    <script>
+        window.dashboardData = {
+            dailySales: @Html.Raw(Json.Serialize(Model.DailySales)),
+            countrySales: @Html.Raw(Json.Serialize(Model.CountrySales)),
+            citySales: @Html.Raw(Json.Serialize(Model.CitySales)),
+            topProducts: @Html.Raw(Json.Serialize(Model.TopProducts)),
+            segmentDistribution: @Html.Raw(Json.Serialize(Model.SegmentDistribution))
+        };
+    </script>
+    <script src="~/js/dashboard/charts.js" asp-append-version="true"></script>
+}

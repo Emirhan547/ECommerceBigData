@@ -1,0 +1,19 @@
+﻿@model ECommerceBigData.Models.DashboardViewModel
+@{
+    ViewData["Title"] = "Müşteri";
+    Layout = "_DashboardLayout";
+}
+<div class="dashboard-page">
+    @await Html.PartialAsync("Partials/_FilterBar", Model)
+    @await Html.PartialAsync("Partials/_AdvancedAnalytics", Model)
+</div>
+
+@section Scripts {
+    <script>
+        window.dashboardData = {
+            monthlyRevenue: @Html.Raw(Json.Serialize(Model.MonthlyRevenue)),
+            hourlyHeatmap: @Html.Raw(Json.Serialize(Model.HourlyHeatmap))
+        };
+    </script>
+    <script src="~/js/dashboard/charts.js" asp-append-version="true"></script>
+}

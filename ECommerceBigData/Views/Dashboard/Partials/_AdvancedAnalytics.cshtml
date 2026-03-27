@@ -2,28 +2,28 @@
 
 <section class="grid grid-cols-1 lg:grid-cols-12 gap-4">
     <article class="panel p-5 lg:col-span-7">
-        <h3 class="font-bold mb-2">Monthly Revenue & Order Count (12M)</h3>
+        <h3 class="font-bold mb-2">Aylık Ciro & Sipariş Adedi (12 Ay)</h3>
         <canvas id="monthlyRevenueChart" height="130"></canvas>
     </article>
     <article class="panel p-5 lg:col-span-5">
-        <h3 class="font-bold mb-3">Order Intensity Heatmap (3M)</h3>
+        <h3 class="font-bold mb-3">Sipariş Yoğunluk Isı Haritası (3 Ay)</h3>
         <div id="hourlyHeatmap" class="grid grid-cols-12 gap-1"></div>
-        <p class="text-[11px] text-zinc-500 mt-3">Y-axis: weekday, X-axis: hour blocks.</p>
+        <p class="text-[11px] text-zinc-500 mt-3">Y ekseni: haftanın günleri, X ekseni: saat blokları.</p>
     </article>
 </section>
 
 <section class="panel p-5">
     <div class="flex justify-between items-center mb-3">
-        <h3 class="font-bold">Top Customers by Lifetime Value</h3>
+        <h3 class="font-bold">Yaşam Boyu Değere Göre En Değerli Müşteriler</h3>
     </div>
 
     <div class="overflow-x-auto">
         <table class="w-full text-sm">
             <thead>
                 <tr class="text-zinc-500 text-xs uppercase border-b border-zinc-800">
-                    <th class="py-2 text-left">Customer</th>
-                    <th class="py-2 text-left">Location</th>
-                    <th class="py-2 text-right">Orders</th>
+                    <th class="py-2 text-left">Müşteri</th>
+                    <th class="py-2 text-left">Konum</th>
+                    <th class="py-2 text-right">Sipariş</th>
                     <th class="py-2 text-right">LTV</th>
                     <th class="py-2 text-right">Segment</th>
                 </tr>
@@ -44,7 +44,7 @@
                 }
                 else
                 {
-                    <tr><td class="py-4 text-zinc-500" colspan="5">No customer records for selected filters.</td></tr>
+                    <tr><td class="py-4 text-zinc-500" colspan="5">Seçili filtreler için müşteri kaydı bulunamadı.</td></tr>
                 }
             </tbody>
         </table>

@@ -1,0 +1,38 @@
+﻿@model ECommerceBigData.Models.DashboardViewModel
+@{
+    ViewData["Title"] = "AI Insights";
+    Layout = "_DashboardLayout";
+}
+<div class="dashboard-page">
+    @await Html.PartialAsync("Partials/_FilterBar", Model)
+
+    <section class="panel p-5">
+        <div class="flex items-center justify-between gap-3 mb-4">
+            <h3 class="font-bold">Yönetici Özet Merkezi</h3>
+            <form asp-action="RefreshExecutiveSummary" method="post">
+                <input type="hidden" name="from" value="@Model.Filters.From?.ToString("yyyy-MM-dd")" />
+                <input type="hidden" name="to" value="@Model.Filters.To?.ToString("yyyy-MM-dd")" />
+                <input type="hidden" name="country" value="@Model.Filters.Country" />
+                <input type="hidden" name="city" value="@Model.Filters.City" />
+                <input type="hidden" name="category" value="@Model.Filters.Category" />
+                <input type="hidden" name="segment" value="@Model.Filters.Segment" />
+                <button class="bg-sky-500 hover:bg-sky-400 px-4 py-2 rounded-lg text-sm font-semibold" type="submit">AI Özeti Yenile</button>
+            </form>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <article class="panel p-4">
+                <p class="text-xs text-zinc-500 mb-2">Yönetici Özeti</p>
+                <p>@Model.ExecutiveInsight?.YoneticiOzeti</p>
+            </article>
+            <article class="panel p-4">
+                <p class="text-xs text-zinc-500 mb-2">Risk Değerlendirmesi</p>
+                <p>@Model.ExecutiveInsight?.RiskDegerlendirmesi</p>
+            </article>
+            <article class="panel p-4">
+                <p class="text-xs text-zinc-500 mb-2">Aksiyon Önerileri</p>
+                <p>@Model.ExecutiveInsight?.AksiyonOnerileri</p>
+            </article>
+        </div>
+    </section>
+</div>
