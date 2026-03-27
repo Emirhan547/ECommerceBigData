@@ -32,7 +32,7 @@ builder.Services.AddScoped<IExecutiveInsightService, ExecutiveInsightService>();
 
 // Cache (aðýr dashboard sorgularý için)
 builder.Services.AddMemoryCache();
-
+builder.Services.AddHttpClient();
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())

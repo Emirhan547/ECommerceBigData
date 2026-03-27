@@ -12,7 +12,7 @@ public class DashboardViewModel
     public List<CitySalesDto> CitySales { get; set; } = new();
     public List<LastOrderDto> LastOrders { get; set; } = new();
     public List<CategorySalesDto> CategorySales { get; set; } = new();
-
+    public EntityOverviewDto EntityOverview { get; set; } = new();
     public decimal RevenueGrowthRate { get; set; }
     public decimal OrdersGrowthRate { get; set; }
     public decimal CustomersGrowthRate { get; set; }

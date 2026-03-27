@@ -1,0 +1,98 @@
+﻿@model ECommerceBigData.Dtos.PagedOrderDto
+@{
+    ViewData["Title"] = "Siparişler";
+    Layout = "_DashboardLayout";
+
+    string? status = ViewBag.Status as string;
+    DateTime? from = ViewBag.From as DateTime?;
+    DateTime? to = ViewBag.To as DateTime?;
+    string? query = ViewBag.Query as string;
+}
+
+<div class="dashboard-page">
+    <header class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+            <h3 class="text-zinc-500 text-xs uppercase tracking-widest">Sipariş Yönetimi</h3>
+            <h2 class="text-3xl font-extrabold tracking-tight">Sipariş Listesi</h2>
+        </div>
+        <div class="chip px-3 py-2 text-xs text-zinc-400">
+            Toplam Kayıt: @Model.TotalCount
+        </div>
+    </header>
+
+    <section class="panel p-5">
+        <form method="get" class="grid grid-cols-1 md:grid-cols-5 gap-3 items-end">
+            <div>
+                <label class="text-xs text-zinc-500">Durum</label>
+                <input type="text" name="status" value="@status" class="w-full bg-zinc-900 border-zinc-700 rounded-lg" placeholder="Delivered" />
+            </div>
+            <div>
+                <label class="text-xs text-zinc-500">Başlangıç</label>
+                <input type="date" name="from" value="@from?.ToString("yyyy-MM-dd")" class="w-full bg-zinc-900 border-zinc-700 rounded-lg" />
+            </div>
+            <div>
+                <label class="text-xs text-zinc-500">Bitiş</label>
+                <input type="date" name="to" value="@to?.ToString("yyyy-MM-dd")" class="w-full bg-zinc-900 border-zinc-700 rounded-lg" />
+            </div>
+            <div>
+                <label class="text-xs text-zinc-500">Hızlı Arama</label>
+                <input type="text" name="query" value="@query" class="w-full bg-zinc-900 border-zinc-700 rounded-lg" placeholder="Sipariş ID" />
+            </div>
+            <button type="submit" class="bg-sky-500 hover:bg-sky-400 px-4 py-2 rounded-lg text-sm font-semibold h-fit">Filtrele</button>
+        </form>
+    </section>
+
+    <section class="panel p-5 overflow-x-auto">
+        <table class="w-full text-sm">
+            <thead>
+                <tr class="text-zinc-500 text-xs uppercase border-b border-zinc-800">
+                    <th class="text-left py-2">Sipariş</th>
+                    <th class="text-left py-2">Müşteri</th>
+                    <th class="text-left py-2">Konum</th>
+                    <th class="text-left py-2">Durum</th>
+                    <th class="text-left py-2">Tarih</th>
+                    <th class="text-right py-2">Tutar</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Items.Count == 0)
+                {
+                    <tr>
+                        <td colspan="6" class="py-6 text-center text-zinc-500">Kriterlere uygun sipariş bulunamadı.</td>
+                    </tr>
+                }
+                else
+                {
+                    @foreach (var order in Model.Items)
+                    {
+                        <tr class="border-b border-zinc-900">
+                            <td class="py-2">#@order.OrderId</td>
+                            <td class="py-2">@order.CustomerName</td>
+                            <td class="py-2">@order.City, @order.Country</td>
+                            <td class="py-2">@order.Status</td>
+                            <td class="py-2">@order.OrderDate.ToString("dd.MM.yyyy")</td>
+                            <td class="py-2 text-right">@order.TotalAmount.ToString("C2")</td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+
+        @if (Model.TotalPages > 1)
+        {
+            <nav class="mt-4 flex flex-wrap gap-2">
+                @for (var i = 1; i <= Model.TotalPages; i++)
+                {
+                    <a class="px-3 py-1 rounded-md text-sm @(i == Model.Page ? "bg-sky-500 text-black font-semibold" : "bg-zinc-900 text-zinc-300")"
+                       asp-action="Index"
+                       asp-route-page="@i"
+                       asp-route-pageSize="@Model.PageSize"
+                       asp-route-status="@status"
+                       asp-route-from="@from?.ToString("yyyy-MM-dd")"
+                       asp-route-to="@to?.ToString("yyyy-MM-dd")"
+                       asp-route-query="@query">@i</a>
+                }
+            </nav>
+        }
+    </section>
+</div>

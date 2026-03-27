@@ -232,11 +232,9 @@ public async Task<KpiMetricsDto> GetKpiMetricsAsync(DashboardFilters filters)
             SELECT CAST(SUM(CAST(pv.Purchases AS FLOAT)) AS FLOAT)
                  / NULLIF(SUM(CAST(pv.ViewCount AS FLOAT)), 0) * 100
             FROM ProductViews pv WITH(NOLOCK)
-            WHERE pv.ViewDate >= @from AND pv.ViewDate < @to
-              AND (@country IS NULL OR pv.Country = @country)
-              AND (@city IS NULL OR pv.City = @city)";
+           WHERE pv.ViewDate >= @from AND pv.ViewDate < @to";
 
-    const string refundQuery = @"
+        const string refundQuery = @"
             SELECT CAST(SUM(CASE WHEN st.Status = 'Returned' THEN 1 ELSE 0 END) * 100.0
                  / NULLIF(COUNT(*), 0) AS FLOAT)
             FROM ShipmentTracking st WITH(NOLOCK)
@@ -285,6 +283,23 @@ await Task.WhenAll(convTask, refundTask, deliveryTask, clvTask);
             AvgDeliveryDays = Math.Round(deliveryTask.Result ?? 0, 1),
             AvgCLV = Math.Round(clvTask.Result ?? 0m, 2)
         };
+    }
+
+    public async Task<EntityOverviewDto> GetEntityOverviewAsync(DashboardFilters filters)
+    {
+        const string query = @"
+            SELECT
+                COUNT(DISTINCT o.Id) AS OrderCount,
+                COUNT(od.Id) AS OrderDetailCount,
+                (SELECT COUNT(*) FROM Products WITH(NOLOCK)) AS ProductCount
+            FROM Orders o WITH(NOLOCK)
+            LEFT JOIN OrderDetails od WITH(NOLOCK) ON od.OrderId = o.Id
+            WHERE o.OrderDate >= @from AND o.OrderDate < @to
+              AND (@country IS NULL OR o.Country = @country)
+              AND (@city IS NULL OR o.City = @city)";
+
+        using var conn = _context.CreateConnection();
+        return await conn.QueryFirstAsync<EntityOverviewDto>(query, filters.ToSqlParams());
     }
 
     public async Task<List<SegmentDistributionDto>> GetSegmentDistributionAsync(DashboardFilters filters)

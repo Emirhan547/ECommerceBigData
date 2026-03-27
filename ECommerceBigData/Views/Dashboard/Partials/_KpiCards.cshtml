@@ -45,3 +45,20 @@
         <h4 class="text-xl font-bold">@Model.KpiMetrics.AvgCLV.ToString("C2")</h4>
     </article>
 </section>
+<section class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <article class="panel p-5">
+        <p class="text-zinc-500 text-xs uppercase">Filtreli Sipariş</p>
+        <h4 class="text-xl font-bold">@Model.EntityOverview.OrderCount.ToString("N0")</h4>
+        <a href="/Orders" class="text-xs text-sky-400 hover:text-sky-300">Siparişleri görüntüle →</a>
+    </article>
+    <article class="panel p-5">
+        <p class="text-zinc-500 text-xs uppercase">Sipariş Detay Satırı</p>
+        <h4 class="text-xl font-bold">@Model.EntityOverview.OrderDetailCount.ToString("N0")</h4>
+        <p class="text-xs text-zinc-400">OrderDetails tablosundan</p>
+    </article>
+    <article class="panel p-5">
+        <p class="text-zinc-500 text-xs uppercase">Toplam Ürün</p>
+        <h4 class="text-xl font-bold">@Model.EntityOverview.ProductCount.ToString("N0")</h4>
+        <a href="/Products" class="text-xs text-sky-400 hover:text-sky-300">Ürünleri görüntüle →</a>
+    </article>
+</section>

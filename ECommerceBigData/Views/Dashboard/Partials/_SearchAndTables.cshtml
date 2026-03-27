@@ -22,6 +22,7 @@
                         <th class="text-left py-2">Sipariş</th>
                         <th class="text-left py-2">Müşteri</th>
                         <th class="text-left py-2">Tarih</th>
+                        <th class="text-left py-2">Durum</th>
                         <th class="text-right py-2">Tutar</th>
                     </tr>
                 </thead>
@@ -29,9 +30,11 @@
                     @foreach (var order in Model.LastOrders.Take(10))
                     {
                         <tr class="border-b border-zinc-900">
+                            <td class="py-2"><a href="/Orders?query=@order.OrderId" class="text-sky-400 hover:text-sky-300">#@order.OrderId</a></td>
                             <td class="py-2">#@order.OrderId</td>
                             <td class="py-2">@order.CustomerName</td>
                             <td class="py-2">@order.OrderDate.ToString("d")</td>
+                            <td class="py-2"><span class="px-2 py-1 rounded bg-zinc-800 text-xs">@order.Status</span></td>
                             <td class="py-2 text-right">@order.TotalAmount.ToString("C2")</td>
                         </tr>
                     }

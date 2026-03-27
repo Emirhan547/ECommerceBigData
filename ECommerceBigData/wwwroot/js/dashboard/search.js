@@ -28,7 +28,7 @@
         }
 
         resultBox.innerHTML = rows.map(r => `
-            <a class="block px-3 py-2 border-b border-zinc-800 hover:bg-zinc-900" href="/Orders/Index?query=${encodeURIComponent(r.orderId || r.OrderId)}">
+           <a class="block px-3 py-2 border-b border-zinc-800 hover:bg-zinc-900" href="/Orders?query=${encodeURIComponent(r.orderId || r.OrderId)}">
                 <div class="text-sm text-zinc-100">#${escapeHtml(r.orderId ?? r.OrderId)} - ${escapeHtml(r.customerName ?? r.CustomerName)}</div>
                 <div class="text-xs text-zinc-500">${escapeHtml(r.city ?? r.City)}, ${escapeHtml(r.country ?? r.Country)} · ${escapeHtml(r.status ?? r.Status)}</div>
             </a>

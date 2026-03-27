@@ -17,6 +17,7 @@ namespace ECommerceBigData.Data.Repositories.DashboardRepositories
         Task<List<HourlyOrderDto>> GetHourlyOrderHeatmapAsync(DashboardFilters filters);
         Task<List<TopCustomerDto>> GetTopCustomersAsync(DashboardFilters filters, int count = 5);
         Task<KpiMetricsDto> GetKpiMetricsAsync(DashboardFilters filters);
+        Task<EntityOverviewDto> GetEntityOverviewAsync(DashboardFilters filters);
         Task<List<SegmentDistributionDto>> GetSegmentDistributionAsync(DashboardFilters filters);
         Task<List<string>> GetCountryFilterOptionsAsync(DashboardFilters filters);
         Task<List<string>> GetCityFilterOptionsAsync(DashboardFilters filters);

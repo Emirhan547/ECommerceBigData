@@ -185,7 +185,7 @@ public class DashboardController : Controller
         var topCustomersTask = _dashboardRepository.GetTopCustomersAsync(filters, 8);
         var kpiTask = _dashboardRepository.GetKpiMetricsAsync(filters);
         var segmentTask = _dashboardRepository.GetSegmentDistributionAsync(filters);
-
+        var entityOverviewTask = _dashboardRepository.GetEntityOverviewAsync(filters);
         var countriesTask = _dashboardRepository.GetCountryFilterOptionsAsync(filters);
         var citiesTask = _dashboardRepository.GetCityFilterOptionsAsync(filters);
         var categoriesTask = _dashboardRepository.GetCategoryFilterOptionsAsync(filters);
@@ -204,6 +204,7 @@ public class DashboardController : Controller
             topCustomersTask,
             kpiTask,
             segmentTask,
+            entityOverviewTask,
             countriesTask,
             citiesTask,
             categoriesTask,
@@ -226,6 +227,7 @@ public class DashboardController : Controller
             TopCustomers = topCustomersTask.Result,
             KpiMetrics = kpiTask.Result,
             SegmentDistribution = segmentTask.Result,
+            EntityOverview = entityOverviewTask.Result,
             RevenueGrowthRate = CalculateGrowthRate(summary.TotalRevenue, previousPeriod.revenue),
             OrdersGrowthRate = CalculateGrowthRate(summary.TotalOrders, previousPeriod.orders),
             CustomersGrowthRate = CalculateGrowthRate(summary.TotalCustomers, previousPeriod.customers),
